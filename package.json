@@ -1,0 +1,42 @@
+{
+  "name": "nanoprocess",
+  "version": "0.0.0",
+  "description": "Maintain a child process as a nanoresource",
+  "main": "index.js",
+  "scripts": {
+    "test": "nyc tape test.js"
+  },
+  "keywords": [
+    "nano",
+    "resource",
+    "child",
+    "process"
+  ],
+  "author": "Joseph Werle <joseph.werle@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "nyc": "^14.1.1",
+    "pretty-bytes": "^5.3.0",
+    "pretty-ms": "^5.0.0",
+    "progress": "^2.0.3",
+    "tape": "^4.11.0"
+  },
+  "dependencies": {
+    "batch": "^0.6.1",
+    "cross-spawn": "^7.0.1",
+    "find-process": "^1.4.2",
+    "fkill": "^6.2.0",
+    "is-running": "^2.1.0",
+    "nanoresource": "^1.2.0",
+    "pidtree": "^0.3.0",
+    "pidusage": "^2.0.17"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/little-core-labs/nanoprocess.git"
+  },
+  "bugs": {
+    "url": "https://github.com/little-core-labs/nanoprocess/issues"
+  },
+  "homepage": "https://github.com/little-core-labs/nanoprocess#readme"
+}
