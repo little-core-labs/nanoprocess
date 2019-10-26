@@ -316,6 +316,7 @@ The command used to start the process
 
 - [nanoresource][nanoresource]
 - [find-process][find-process]
+- [cross-spawn][cross-spawn]
 - [pidusage][pidusage]
 - [pidtree][pidtree]
 
