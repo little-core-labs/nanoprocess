@@ -114,7 +114,6 @@ class Process extends Resource {
     this.command = command
     this.process = null
     this.signal = null
-    this.spawn = this.options.spawn || spawn
     this.code = null
     this.args = Array.isArray(args) ? args : []
   }
@@ -128,31 +127,62 @@ class Process extends Resource {
   }
 
   /**
+   * `spawn()` implementation for extending classes to
+   * overload and provide a `ChildProcess` from some
+   * other means.
+   * @protected
+   * @param {String} command
+   * @param {?(Array|String)} args
+   * @param {?(Object)} options
+   * @param {Function} callback
+   */
+  spawn(command, args, options, callback) {
+    if ('function' === typeof this.options.spawn) {
+      try {
+        this.options.spawn(command, args, options, callback)
+      } catch (err) {
+        callback(err)
+      }
+    } else {
+      try {
+        callback(null, spawn(command, args, options))
+      } catch (err) {
+        // istanbul ignore next
+        callback(err)
+      }
+    }
+  }
+
+  /**
    * Implements the `_open()` methods for the `nanoresource` class.
    * @protected
    */
   _open(callback) {
-    const { command, options, spawn, args } = this
-    const child = spawn(command, args, options)
+    const { command, options, args } = this
+    this.spawn(command, args, options, (err, child) => {
+      if (err) {
+        return callback(err)
+      }
 
-    callback = once(callback)
+      callback = once(callback)
 
-    child.once('close', (code, signal) => {
-      this.close()
-    })
+      child.once('close', (code, signal) => {
+        this.close()
+      })
 
-    child.once('exit', (code, signal) => {
-      this.code = code || 0
-      this.signal = signal
-      this.inactive()
-    })
+      child.once('exit', (code, signal) => {
+        this.code = code || 0
+        this.signal = signal
+        this.inactive()
+      })
 
-    child.once('error', callback)
-    this.stat(child, (err, stats) => {
-      this.process = child
-      child.removeListener('error', callback)
-      process.nextTick(() => this.active())
-      process.nextTick(callback, err)
+      child.once('error', callback)
+      this.stat(child, (err, stats) => {
+        this.process = child
+        child.removeListener('error', callback)
+        process.nextTick(() => this.active())
+        process.nextTick(callback, err)
+      })
     })
   }
 
