@@ -8,14 +8,17 @@ const template = [
   'up for :uptime',
   'CPU: :cpu%',
   'MEM: :mem',
-  ':pidsCount child process(es)'
+  ':pidsCount child processes'
 ].join(' | ')
 
 const sleep = nanoprocess('node', [
   '-e',
-  'process.title = "sleep";' +
-  'require("cross-spawn")("sleep", [2]);' +
-  'Array(10e7).fill(crypto.randomBytes(1024));'
+  [
+    'process.title = "sleep-spawn";',
+    'require("cross-spawn")("sleep", [2]);',
+    'require("cross-spawn")("sleep", [2]);',
+    'Array(4*10e6).fill(crypto.randomBytes(1024));',
+  ].join('')
 ])
 
 const bar = new Progress(template, {
@@ -29,8 +32,7 @@ sleep.open((err) => {
   let timer = 0
   sleep.stat(function onstat(err, stats) {
     if (stats) {
-      console.log(stats);
-      bar.update(0, {
+      bar.update(stats.uptime > 2000 && 0 === stats.cpu ? 1 : 0, {
         pidsCount: stats.pids.length,
         uptime: prettyTime(stats.uptime),
         name: stats.name,
@@ -41,7 +43,6 @@ sleep.open((err) => {
     }
 
     if (stats && stats.uptime > 2000 && 0 === stats.cpu) {
-      bar.update(1, stats)
       sleep.close()
     } else if (!err) {
       clearTimeout(timer)
