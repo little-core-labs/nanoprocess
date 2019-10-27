@@ -4,7 +4,7 @@
   "description": "Maintain a child process as a nanoresource",
   "main": "index.js",
   "scripts": {
-    "test": "nyc tape test.js"
+    "test": "nyc -x test.js -x fixtures tape test.js"
   },
   "keywords": [
     "nano",
@@ -27,7 +27,9 @@
     "find-process": "^1.4.2",
     "fkill": "^6.2.0",
     "is-running": "^2.1.0",
+    "nanoassert": "^2.0.0",
     "nanoresource": "^1.2.0",
+    "once": "^1.4.0",
     "pidtree": "^0.3.0",
     "pidusage": "^2.0.17"
   },
