@@ -13,7 +13,7 @@ $ npm install nanoprocess
 <a name="status"></a>
 ## Status
 
-> **Testing/Documentation**
+> **Stable**
 
 <a name="usage"></a>
 ## Usage
@@ -199,6 +199,18 @@ https://nodejs.org/api/child_process.html#child_process_class_childprocess).
 
 The child process ID.
 
+<a name="child-signal"></a>
+#### `child.signal`
+
+The child process exit signal. This value can be `null`. Check this
+after the child process has closed.
+
+<a name="child-code"></a>
+#### `child.code`
+
+The child process exit code. This value can be `null`. Check this after
+the child process has closed.
+
 <a name="child-args"></a>
 #### `child.args`
 
@@ -214,11 +226,22 @@ Opens the child process by [spawning][cross-spawn] a
 error occurs during the spawning of the child process.
 
 <a name="child-close"></a>
-#### `child.close(callback)`
+#### `child.close([allowActive[, callback]])`
 
 Closes the child process and all decedent child process in the process
 tree calling `callback(err)` when closed or if an error occurs during
-the closing of the spawned child process.
+the closing of the spawned child process. Setting `allowActive` to
+`false` (default) will cause a `'SIGTERM'` to be sent to the child process
+causing it to close. You can call `child.kill({ force: true })` prior to
+calling this method if you want force the processed to be killed. Set
+`allowActive` to `true` to wait for the process to close on its and mark
+the [nanoresource][nanoresource] instance **inactive**.
+
+<a name="child-kill"></a>
+#### `child.kill([opts], callback)`
+
+Kill the child process calling `callback` when killed or if can error
+occurs. Set `opts.true` to force the processed to be killed.
 
 <a name="child-stat"></a>
 #### `child.stat(callback)`
@@ -312,6 +335,12 @@ Memory usage in bytes
 
 The command used to start the process
 
+<a name="child-stat-is-running"></a>
+##### `stats.isRunning`
+
+`true` if the process or any child process in the [pidtree][pidtree] for
+the root child process [is still running][is-running].
+
 ## See Also
 
 - [nanoresource][nanoresource]
@@ -328,6 +357,7 @@ MIT
 [nanoresource]: https://github.com/mafintosh/nanoresource
 [find-process]: https://github.com/yibn2008/find-process
 [cross-spawn]: https://github.com/moxystudio/node-cross-spawn
+[is-running]: https://github.com/nisaacson/is-running
 [progress]: https://github.com/visionmedia/node-progress
 [pidusage]: https://github.com/soyuka/pidusage
 [pidtree]: https://github.com/simonepri/pidtree
