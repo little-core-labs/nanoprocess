@@ -1,6 +1,6 @@
 {
   "name": "nanoprocess",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Maintain a child process as a nanoresource",
   "main": "index.js",
   "scripts": {
