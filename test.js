@@ -198,6 +198,22 @@ test('nanoprocess() - invalid command', (t) => {
   })
 })
 
+test('nanoprocess() - shell long running', (t) => {
+  const child = nanoprocess('node', {
+    stdio: 'inherit'
+  })
+
+  child.open((err) => {
+    t.notOk(err)
+    setTimeout(() => {
+      t.ok(child.opened)
+      child.close((err) => {
+        t.notOk(err)
+        t.end()
+      })
+    }, 1000)
+  })
+})
 
 test('nanoprocess() - kill process', (t) => {
   const args = [path.join('fixtures', 'work.js')]
@@ -312,8 +328,8 @@ test('nanoprocess() - custom spawn', (t) => {
       t.end()
     })
   })
-}
-)
+})
+
 test('nanoprocess() - custom spawn error', (t) => {
   const args = [path.join('fixtures', 'work.js')]
   const child = nanoprocess('node', args, {

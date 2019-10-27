@@ -106,6 +106,11 @@ class Process extends Resource {
     assert('string' === typeof command && command.length > 0,
       'Command is not a string.')
 
+    if (args && 'object' === typeof args && !Array.isArray(args)) {
+      options = args
+      args = null
+    }
+
     if ('string' === typeof args) {
       args = args.split('  ')
     }
