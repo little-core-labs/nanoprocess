@@ -1,3 +1,4 @@
+const spawn = require('cross-spawn')
 const test = require('tape')
 const path = require('path')
 
@@ -293,5 +294,36 @@ test('nanoprocess() - stat child pids', (t) => {
         t.end()
       })
     })
+  })
+})
+
+test('nanoprocess() - custom spawn', (t) => {
+  const args = [path.join('fixtures', 'work.js')]
+  const child = nanoprocess('node', args, {
+    spawn(command, args, opts, callback) {
+      callback(null, spawn(command, args, opts))
+    }
+  })
+
+  child.open((err) => {
+    t.notOk(err)
+    child.close((err) => {
+      t.notOk(err)
+      t.end()
+    })
+  })
+}
+)
+test('nanoprocess() - custom spawn error', (t) => {
+  const args = [path.join('fixtures', 'work.js')]
+  const child = nanoprocess('node', args, {
+    spawn(command, args, opts, callback) {
+      throw new Error('ERROR')
+    }
+  })
+
+  child.open((err) => {
+    t.ok(err)
+    t.end()
   })
 })
