@@ -269,20 +269,23 @@ class Process extends Resource {
     find(pid, onfind)
 
     function onfind(err, results) {
+      // istanbul ignore next
       if (err) { return callback(err) }
       const result = results[0]
 
-      Object.assign(stats, {
-        bin: result.bin,
-        uid: result.uid,
-        gid: result.gid,
-        name: result.name,
-      })
+      if (result) {
+        Object.assign(stats, {
+          bin: result.bin,
+          uid: result.uid,
+          gid: result.gid,
+          name: result.name,
+        })
 
-      if (self.process && result.pid === self.process.pid) {
-        stats.command = self.command
-      } else {
-        stats.command = result.cmd
+        if (self.process && result.pid === self.process.pid) {
+          stats.command = self.command
+        } else {
+          stats.command = result.cmd
+        }
       }
 
       if (true === opts.shallow) {
