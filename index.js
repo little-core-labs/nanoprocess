@@ -306,6 +306,11 @@ class Process extends Resource {
     function onfind(err, results) {
       // istanbul ignore next
       if (err) { return callback(err) }
+      // istanbul ignore next
+      if (!results || false === Array.isArray(results)) {
+        return callback(null, new PROCESS_NOT_RUNNING_ERR())
+      }
+
       const result = results[0]
 
       if (result) {
@@ -349,7 +354,7 @@ class Process extends Resource {
       usages = Object.values(usages)
 
       for (const usage of usages) {
-        if (pid === usage.pid) {
+        if (usage && pid === usage.pid) {
           stats.cpu = usage.cpu
           stats.ppid = usage.ppid
           stats.uptime = usage.elapsed
