@@ -15,7 +15,7 @@ $ npm install nanoprocess
 
 > **Stable**
 
-[![Actions Status](https://github.com/little-core-labs/nanoprocess/workflows/Node%20CI/badge.svg)](https://github.com/little-core-labs/nanoprocess/actions)
+> [![Actions Status](https://github.com/little-core-labs/nanoprocess/workflows/Node%20CI/badge.svg)](https://github.com/little-core-labs/nanoprocess/actions)
 
 <a name="usage"></a>
 ## Usage
