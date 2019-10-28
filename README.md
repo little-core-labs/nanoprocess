@@ -3,6 +3,8 @@ nanoprocess
 
 > Maintain a child process as a [nanoresource][nanoresource]
 
+[![Actions Status](https://github.com/little-core-labs/nanoprocess/workflows/Node%20CI/badge.svg)](https://github.com/little-core-labs/nanoprocess/actions)
+
 <a name="installation"></a>
 ## Installation
 
