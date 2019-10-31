@@ -12,6 +12,11 @@
     "child",
     "process"
   ],
+  "files": [
+    "index.js",
+    "README.md",
+    "LICENSE"
+  ],
   "author": "Joseph Werle <joseph.werle@gmail.com>",
   "license": "MIT",
   "devDependencies": {
