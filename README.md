@@ -201,6 +201,21 @@ https://nodejs.org/api/child_process.html#child_process_class_childprocess).
 
 The child process ID.
 
+<a name="child-stdin"></a>
+#### `child.stdin`
+
+The child process `stdin` stream. This may be `null`.
+
+<a name="child-stdout"></a>
+#### `child.stdout`
+
+The child process `stdout` stream. This may be `null`.
+
+<a name="child-stderr"></a>
+#### `child.stderr`
+
+The child process `stderr` stream. This may be `null`.
+
 <a name="child-signal"></a>
 #### `child.signal`
 

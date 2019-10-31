@@ -332,11 +332,38 @@ test('nanoprocess() - custom spawn error', (t) => {
   })
 })
 
-test('nanoprocess() - options in second argument', (t) => {
-  const child = nanoprocess('command', {
+test('nanoprocess() - inherit stdio', (t) => {
+  const child = nanoprocess('node', {
     stdio: 'inherit'
   })
 
   t.equal('inherit', child.options.stdio)
-  t.end()
+  child.open((err) => {
+    t.error(err)
+    t.notOk(child.stdin)
+    t.notOk(child.stdout)
+    t.notOk(child.stderr)
+    child.close((err) => {
+      t.error(err)
+      t.end()
+    })
+  })
+})
+
+test('nanoprocess() - pipe stdio', (t) => {
+  const child = nanoprocess('node', {
+    stdio: 'pipe'
+  })
+
+  t.equal('pipe', child.options.stdio)
+  child.open((err) => {
+    t.error(err)
+    t.ok(child.stdin)
+    t.ok(child.stdout)
+    t.ok(child.stderr)
+    child.close((err) => {
+      t.error(err)
+      t.end()
+    })
+  })
 })

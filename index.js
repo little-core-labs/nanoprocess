@@ -132,6 +132,30 @@ class Process extends Resource {
   }
 
   /**
+   * Accessor for getting the process stdin.
+   * @accessor
+   */
+  get stdin() {
+    return this.process && this.process.stdin
+  }
+
+  /**
+   * Accessor for getting the process stdout.
+   * @accessor
+   */
+  get stdout() {
+    return this.process && this.process.stdout
+  }
+
+  /**
+   * Accessor for getting the process stderr..
+   * @accessor
+   */
+  get stderr() {
+    return this.process && this.process.stderr
+  }
+
+  /**
    * `spawn()` implementation for extending classes to
    * overload and provide a `ChildProcess` from some
    * other means.
