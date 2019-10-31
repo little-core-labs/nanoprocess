@@ -470,6 +470,32 @@ class Process extends Resource {
     // istanbul ignore next
     return this.removeListener(event, callback)
   }
+
+  /**
+   * Send a message to the child process.
+   * @see {@link https://nodejs.org/api/child_process.html#child_process_subprocess_send_message_sendhandle_options_callback}
+   * @return {Boolean}
+   */
+  send(...args) {
+    // istanbul ignore next
+    if (this.process && 'function' === typeof this.process.send) {
+      return this.process.send(...args)
+    }
+
+    // istanbul ignore next
+    return false
+  }
+
+  /**
+   * Disconnect the child process.
+   * @see {@link https://nodejs.org/api/child_process.html#child_process_subprocess_disconnect}
+   */
+  disconnect() {
+    // istanbul ignore next
+    if (this.process && 'function' === typeof this.process.disconnect) {
+      this.process.disconnect()
+    }
+  }
 }
 
 /**
