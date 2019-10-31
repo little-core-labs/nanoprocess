@@ -216,6 +216,21 @@ The child process `stdout` stream. This may be `null`.
 
 The child process `stderr` stream. This may be `null`.
 
+<a name="child-channel"></a>
+#### `child.channel`
+
+The child process `channel` object. This may be `null`.
+
+<a name="child-connected"></a>
+#### `child.connected`
+
+The child process connection state.
+
+<a name="child-killed"></a>
+#### `child.killed`
+
+The child process killed state.
+
 <a name="child-signal"></a>
 #### `child.signal`
 

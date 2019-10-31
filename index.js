@@ -117,6 +117,7 @@ class Process extends Resource {
 
     this.options = options || {}
     this.command = command
+    this.killedByProcess = false
     this.process = null
     this.signal = null
     this.code = null
@@ -148,11 +149,40 @@ class Process extends Resource {
   }
 
   /**
-   * Accessor for getting the process stderr..
+   * Accessor for getting the process stderr.
    * @accessor
    */
   get stderr() {
     return this.process && this.process.stderr
+  }
+
+  /**
+   * Accessor for getting the process channel.
+   * @accessor
+   */
+  get channel() {
+    return this.process && this.process.channel
+  }
+
+  /**
+   * Accessor for getting the process connection state.
+   * @accessor
+   */
+  get connected() {
+    return Boolean(this.process && this.process.connected)
+  }
+
+  /**
+   * Accessor for getting the process killed state.
+   * @accessor
+   */
+  get killed() {
+    const killed = Boolean(this.process && this.process.killed)
+    if (killed) {
+      this.killedByProcess = true
+    }
+
+    return this.killedByProcess || killed
   }
 
   /**

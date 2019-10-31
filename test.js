@@ -9,6 +9,9 @@ const xtest = () => void 0
 test('const child = nanoprocess(command[, args[, opts]])', (t) => {
   const args = [path.join('fixtures', 'work.js')]
   const child = nanoprocess('node', args)
+  t.equal(false, child.connected)
+  t.equal(false, child.killed)
+  t.notOk(child.channel)
   child.open((err) => {
     t.notOk(err)
     t.ok(child.pid)
@@ -113,12 +116,14 @@ test('nanoprocess() - child spawn', (t) => {
 
 test('nanoprocess() - fork, child spawn', (t) => {
   const args = [path.join('fixtures', 'spawn.js')]
-  const child = nanoprocess('node', args)
+  const child = nanoprocess('node', args, { stdio: [ 0, 1, 2, 'ipc' ] })
   child.open((err) => {
     t.notOk(err)
     t.ok(child.pid)
     t.ok(child.options)
     t.ok(child.process)
+    t.ok(child.channel)
+    t.ok(child.connected)
     t.ok(args === child.args)
     t.equal('node', child.command)
 
@@ -211,6 +216,22 @@ test('nanoprocess() - kill process', (t) => {
         t.equal('SIGKILL', child.signal)
         t.end()
       })
+    })
+  })
+})
+
+test('nanoprocess() - kill child process', (t) => {
+  const args = [path.join('fixtures', 'work.js')]
+  const child = nanoprocess('node', args)
+  child.open((err) => {
+    t.notOk(err)
+    child.process.kill()
+    t.equal(true, child.killed)
+    child.close((err) => {
+      t.notOk(err)
+      t.equal(true, child.killed)
+      t.equal('SIGTERM', child.signal)
+      t.end()
     })
   })
 })
