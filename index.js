@@ -426,6 +426,50 @@ class Process extends Resource {
       callback(null, stats)
     }
   }
+
+  /**
+   * Adds an event listener to the child process.
+   * @protected
+   */
+  // istanbul ignore next
+  addListener(event, callback) {
+    if (this.process) {
+      return this.process.addListener(event, callback)
+    }
+
+    return false
+  }
+
+  /**
+   * Removes an event listener to the child process.
+   * @protected
+   */
+  // istanbul ignore next
+  removeListener(event, callback) {
+    if (this.process) {
+      return this.process.removeListener(event, callback)
+    }
+
+    return false
+  }
+
+  /**
+   * Alias to `addListener()`.
+   * @protected
+   */
+  on(event, callback) {
+    // istanbul ignore next
+    return this.addListener(event, callback)
+  }
+
+  /**
+   * Alias to `removeListener()`.
+   * @protected
+   */
+  off(event, callback) {
+    // istanbul ignore next
+    return this.removeListener(event, callback)
+  }
 }
 
 /**
