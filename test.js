@@ -15,6 +15,7 @@ test('const child = nanoprocess(command[, args[, opts]])', (t) => {
   child.open((err) => {
     t.notOk(err)
     t.ok(child.pid)
+    t.ok(child.ppid)
     t.ok(child.options)
     t.ok(child.process)
     t.notOk(child.code)
@@ -45,6 +46,7 @@ test('const child = nanoprocess(command[, args[, opts]])', (t) => {
           child.close(true, (err) => {
             t.notOk(err)
             t.equal(0, child.code)
+            t.equal(null, child.ppid)
             t.equal(null, child.signal)
             t.end()
           })

@@ -121,6 +121,7 @@ class Process extends Resource {
     this.process = null
     this.signal = null
     this.code = null
+    this.ppid = null
     this.args = Array.isArray(args) ? args : []
   }
 
@@ -231,6 +232,7 @@ class Process extends Resource {
 
       child.once('exit', (code, signal) => {
         this.code = code || 0
+        this.ppid = null
         this.signal = signal
         this.inactive()
       })
@@ -247,6 +249,11 @@ class Process extends Resource {
         process.nextTick(callback, err)
 
         child.removeListener('error', callback)
+
+        if (stats && stats.ppid) {
+          this.ppid = stats.ppid
+        }
+
         this.process = child
       })
     })

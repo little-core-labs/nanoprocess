@@ -201,6 +201,11 @@ https://nodejs.org/api/child_process.html#child_process_class_childprocess).
 
 The child process ID.
 
+<a name="child-ppid"></a>
+#### `child.ppid`
+
+The child process parent process ID.
+
 <a name="child-stdin"></a>
 #### `child.stdin`
 
