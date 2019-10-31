@@ -237,10 +237,17 @@ class Process extends Resource {
 
       child.once('error', callback)
       this.stat(child, (err, stats) => {
-        this.process = child
-        child.removeListener('error', callback)
+        // process may have ended before a stat
+        // is possible so `err` is `null` here
+        if (err && /not?|found/i.test(err.message)) {
+          err = null
+        }
+
         process.nextTick(() => this.active())
         process.nextTick(callback, err)
+
+        child.removeListener('error', callback)
+        this.process = child
       })
     })
   }
