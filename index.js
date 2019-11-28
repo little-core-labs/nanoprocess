@@ -8,6 +8,7 @@ const spawn = require('cross-spawn')
 const fkill = require('fkill')
 const pfind = require('find-process')
 const once = require('once')
+const { PassThrough } = require('stream')
 
 // quick util
 const errback = (p, cb) => void p.then((r) => cb(null, r), cb).catch(cb)
@@ -72,6 +73,8 @@ class Stats {
     this.uptime = 0 // time in milliseconds since process started
     this.memory = 0 // memory usage bytes
     this.command = null // the command used to start the child process
+    this._stdout = null
+    this._stderr = null
   }
 
   /**
@@ -146,7 +149,7 @@ class Process extends Resource {
    * @accessor
    */
   get stdout() {
-    return this.process && this.process.stdout
+    return this._stdout
   }
 
   /**
@@ -154,7 +157,7 @@ class Process extends Resource {
    * @accessor
    */
   get stderr() {
-    return this.process && this.process.stderr
+    return this._stderr
   }
 
   /**
@@ -238,6 +241,21 @@ class Process extends Resource {
       })
 
       child.once('error', callback)
+
+
+      // Pipe the child's stdout and stderr into passthrough streams
+      // so that all data right from the beginning is captured.
+      // The open callback is only invoked after a nextTick (due to stats capturing)
+      // and the stdout and stderr sockets do not buffer data after being closed.
+      if (child.stdout) {
+        this._stdout = new PassThrough()
+        child.stdout.pipe(this._stdout)
+      }
+      if (child.stderr) {
+        this._stderr = new PassThrough()
+        child.stderr.pipe(this._stderr)
+      }
+
       this.stat(child, (err, stats) => {
         // process may have ended before a stat
         // is possible so `err` is `null` here
