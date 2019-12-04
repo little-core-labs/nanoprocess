@@ -122,6 +122,7 @@ class Process extends Resource {
     this.command = command
     this.killedByProcess = false
     this.process = null
+    this.exited = false
     this.signal = null
     this.code = null
     this.ppid = null
@@ -223,6 +224,8 @@ class Process extends Resource {
   _open(callback) {
     const { command, options, args } = this
     this.spawn(command, args, options, (err, child) => {
+      let bufferedError = Buffer.alloc(0)
+
       if (err) {
         return callback(err)
       }
@@ -237,6 +240,7 @@ class Process extends Resource {
         this.code = code || 0
         this.ppid = null
         this.signal = signal
+        this.exited = true
         this.inactive()
       })
 
@@ -251,9 +255,16 @@ class Process extends Resource {
         this._stdout = new PassThrough()
         child.stdout.pipe(this._stdout)
       }
+
       if (child.stderr) {
         this._stderr = new PassThrough()
         child.stderr.pipe(this._stderr)
+        child.stderr.on('data', onerrors)
+      }
+
+      // istanbul ignore next
+      function onerrors(err) {
+        bufferedError = Buffer.concat([bufferedError, Buffer.from('\n'), err])
       }
 
       this.stat(child, (err, stats) => {
@@ -263,10 +274,21 @@ class Process extends Resource {
           err = null
         }
 
-        process.nextTick(() => this.active())
-        process.nextTick(callback, err)
+        if (child.stderr) {
+          child.stderr.removeListener('data', onerrors)
+        }
 
         child.removeListener('error', callback)
+
+        if (this.exited) {
+          // istanbul ignore next
+          if (this.code && bufferedError.length) {
+            return process.nextTick(callback, new Error(String(bufferedError)))
+          }
+        }
+
+        process.nextTick(() => this.active())
+        process.nextTick(callback, err)
 
         if (stats && stats.ppid) {
           this.ppid = stats.ppid
