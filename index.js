@@ -122,6 +122,7 @@ class Process extends Resource {
     this.command = command
     this.killedByProcess = false
     this.process = null
+    this.exiting = false
     this.exited = false
     this.signal = null
     this.code = null
@@ -225,6 +226,7 @@ class Process extends Resource {
     const { command, options, args } = this
     this.spawn(command, args, options, (err, child) => {
       let bufferedError = Buffer.alloc(0)
+      let active = 0
 
       if (err) {
         return callback(err)
@@ -233,6 +235,7 @@ class Process extends Resource {
       callback = once(callback)
 
       child.once('close', (code, signal) => {
+        this.exiting = true
         this.close()
       })
 
@@ -241,7 +244,10 @@ class Process extends Resource {
         this.ppid = null
         this.signal = signal
         this.exited = true
-        this.inactive()
+        this.exiting = false
+        if (active) {
+          this.inactive()
+        }
       })
 
       child.once('error', callback)
@@ -280,14 +286,14 @@ class Process extends Resource {
 
         child.removeListener('error', callback)
 
-        if (this.exited) {
+        if (this.exiting || this.exited) {
           // istanbul ignore next
           if (this.code && bufferedError.length) {
             return process.nextTick(callback, new Error(String(bufferedError)))
           }
         }
 
-        process.nextTick(() => this.active())
+        process.nextTick(() => ++active && this.active())
         process.nextTick(callback, err)
 
         if (stats && stats.ppid) {
