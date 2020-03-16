@@ -298,13 +298,10 @@ class Process extends Resource {
           if (this.code && bufferedError.length) {
             return process.nextTick(callback, new Error(String(bufferedError)))
           } else {
+            process.nextTick(callback, null)
             // remite exit code and signal if exited right away during open
             // istanbul ignore next
-            if (this.exited) {
-              process.nextTick(() => child.emit('exit', this.code, this.signal))
-            }
-
-            return process.nextTick(callback, null)
+            return process.nextTick(() => child.emit('exit', this.code, this.signal))
           }
         }
 
