@@ -226,7 +226,7 @@ class Process extends Resource {
     const { command, options, args } = this
     this.spawn(command, args, options, (err, child) => {
       let bufferedError = Buffer.alloc(0)
-      let active = 0
+      let active = false
 
       if (err) {
         return callback(err)
@@ -234,20 +234,22 @@ class Process extends Resource {
 
       callback = once(callback)
 
-      child.once('close', (code, signal) => {
-        this.exiting = true
-        this.close()
-      })
-
       child.once('exit', (code, signal) => {
-        this.code = code || 0
-        this.ppid = null
+        this.exiting = true
         this.signal = signal
-        this.exited = true
-        this.exiting = false
+        this.ppid = null
+        this.code = code || 0
+
+        child.removeAllListeners('exit')
+
         if (active) {
           this.inactive()
         }
+
+        this.close(() => {
+          this.exited = true
+          this.exiting = false
+        })
       })
 
       child.once('error', callback)
@@ -286,21 +288,30 @@ class Process extends Resource {
 
         child.removeListener('error', callback)
 
-        if (this.exiting || this.exited) {
-          // istanbul ignore next
-          if (this.code && bufferedError.length) {
-            return process.nextTick(callback, new Error(String(bufferedError)))
-          }
-        }
-
-        process.nextTick(() => ++active && this.active())
-        process.nextTick(callback, err)
-
+        this.process = child
         if (stats && stats.ppid) {
           this.ppid = stats.ppid
         }
 
-        this.process = child
+        if (this.exiting || this.exited) {
+          // istanbul ignore next
+          if (this.code && bufferedError.length) {
+            return process.nextTick(callback, new Error(String(bufferedError)))
+          } else {
+            // remite exit code and signal if exited right away during open
+            // istanbul ignore next
+            if (this.exited) {
+              process.nextTick(() => child.emit('exit', this.code, this.signal))
+            }
+
+            return process.nextTick(callback, null)
+          }
+        }
+
+        this.active()
+        active = true
+
+        process.nextTick(callback, err)
       })
     })
   }
@@ -324,10 +335,12 @@ class Process extends Resource {
       allowActive = false
     }
 
+    // istanbul ignore next
     if ('boolean' !== typeof allowActive) {
       allowActive = false
     }
 
+    // istanbul ignore next
     if ('function' !== typeof callback) {
       callback = noop
     }
