@@ -30,7 +30,7 @@
     "batch": "^0.6.1",
     "cross-spawn": "^7.0.1",
     "find-process": "^1.4.2",
-    "fkill": "^6.2.0",
+    "fkill": "^7.0.0",
     "is-running": "^2.1.0",
     "nanoassert": "^2.0.0",
     "nanoresource": "^1.2.0",
